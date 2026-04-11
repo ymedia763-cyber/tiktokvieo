@@ -30,7 +30,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite; /* اینیمیٹڈ بیک گراؤنڈ */
+  animation: gradientBG 15s ease infinite; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,7 +57,6 @@ body {
   text-align: center;
   box-shadow: 0 25px 50px rgba(0,0,0,0.5);
   border: 1px solid rgba(255,255,255,0.2);
-  /* انٹری اینیمیشن */
   animation: slideUpMain 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -66,12 +65,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* سوشل بٹنز کی اینیمیشن */
 .social-header {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   animation: fadeIn 1.5s ease;
 }
 
@@ -96,6 +94,30 @@ body {
 .social-btn:hover {
   transform: translateY(-5px) scale(1.05);
   filter: brightness(1.2);
+}
+
+/* یوٹیوب ڈاؤنلوڈر بٹن کا اسٹائل */
+.yt-downloader-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 0, 0, 0.2);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,0,0,0.3);
+  transition: 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.yt-downloader-link:hover {
+  background: var(--yt-red);
+  border-color: #fff;
+  transform: scale(1.05);
 }
 
 .logo-icon { 
@@ -174,7 +196,6 @@ input::placeholder { color: rgba(255,255,255,0.6); }
 .main-btn:active { transform: scale(0.95); }
 .main-btn:hover { background: var(--accent-color); color: #fff; }
 
-/* ویڈیو رزلٹ کارڈ */
 .video-info-card {
   margin-top: 30px;
   background: rgba(0, 0, 0, 0.3);
@@ -231,6 +252,11 @@ video { width: 100%; border-radius: 15px; margin-bottom: 15px; }
     </a>
   </div>
 
+  <a href="https://ymedia763-cyber.github.io/yt_thumbnail/" target="_blank" class="yt-downloader-link">
+    <svg viewBox="0 0 576 512" width="18" fill="white"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.781 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+    Try YouTube Thumbnail Downloader
+  </a>
+
   <div class="logo-icon"><i class="fab fa-tiktok"></i></div>
   <h2 style="margin:0 0 25px 0; font-weight: 700; letter-spacing: -1px;">TikTok Pro Downloader</h2>
   
@@ -247,7 +273,6 @@ video { width: 100%; border-radius: 15px; margin-bottom: 15px; }
 </div>
 
 <script>
-// کاپی روکنے کے لیے مزید سیکیورٹی
 document.onkeydown = function(e) {
   if(e.ctrlKey && (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 73)) {
     return false;
@@ -279,20 +304,18 @@ async function fetchVideo() {
       result.innerHTML = `
         <div class="video-info-card">
           <video controls src="${data.play}"></video>
-          
           <div class="stats-grid">
             <div class="stat-item"><i class="fas fa-heart" style="color:#fe2c55"></i><br>${data.digg_count}</div>
             <div class="stat-item"><i class="fas fa-comment" style="color:#00f2ea"></i><br>${data.comment_count}</div>
             <div class="stat-item"><i class="fas fa-share" style="color:#25D366"></i><br>${data.share_count}</div>
           </div>
-
           <a class="download-link" href="javascript:void(0)" onclick="forceDownload('${data.play}', 'tiktok_video.mp4')">
             <i class="fas fa-cloud-download-alt"></i> SAVE TO GALLERY
           </a>
         </div>
       `;
     } else {
-      result.innerHTML = "<p style='color:#ff4d4d; margin-top:20px;'>❌ Video not found. Check link!</p>";
+      result.innerHTML = "<p style='color:#ff4d4d; margin-top:20px;'>❌ Video not found.</p>";
     }
   } catch (e) {
     result.innerHTML = "<p style='color:#ff4d4d; margin-top:20px;'>⚠️ Connection failed.</p>";
@@ -311,6 +334,5 @@ async function forceDownload(videoUrl, fileName) {
   window.URL.revokeObjectURL(url);
 }
 </script>
-
 </body>
 </html>
