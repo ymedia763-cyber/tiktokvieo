@@ -1,108 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title></title>
-  <!-- Google Fonts + Smooth Base -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      transition: background-color 0.25s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Premium Downloader</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+:root {
+  /* Default: Light Mode (Pink Theme) */
+  --bg-color: #fff5f7;
+  --accent-color: #fe2c55; /* TikTok Pink/Red */
+  --container-bg: rgba(255, 255, 255, 0.8);
+  --text-color: #333;
+  --input-bg: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Mode (Red Theme) */
+    --bg-color: #0b0b0b;
+    --accent-color: #ff0000; /* Pure Red */
+    --container-bg: rgba(20, 20, 20, 0.7);
+    --text-color: #fff;
+    --input-bg: #1a1a1a;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at 20% 30%, var(--accent-color) 0%, transparent 20%),
+                    radial-gradient(circle at 80% 70%, #00f2ea 0%, transparent 20%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: var(--text-color);
+}
+
+.container {
+  background: var(--container-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px 30px;
+  border-radius: 30px;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  animation: slideUp 0.8s ease-out;
+}
+
+.logo-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+  color: var(--accent-color);
+  filter: drop-shadow(0 0 10px var(--accent-color));
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 15px;
+  border: 2px solid transparent;
+  outline: none;
+  background: var(--input-bg);
+  color: var(--text-color);
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+input:focus {
+  border-color: var(--accent-color);
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  background: var(--accent-color);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 0, 80, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+#result {
+  margin-top: 30px;
+}
+
+.video-card {
+  background: rgba(0,0,0,0.05);
+  border-radius: 20px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  border-radius: 15px;
+  display: block;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 12px;
+  background: #00f2ea;
+  color: #000;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.download-btn:hover {
+  background: #fff;
+  filter: brightness(1.1);
+}
+
+@keyframes slideUp {
+  from {opacity: 0; transform: translateY(30px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+/* Loader Style */
+.loader {
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top: 4px solid var(--accent-color);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo-icon"><i class="fab fa-tiktok"></i></div>
+  <h1>TikTok Downloader</h1>
+  
+  <div class="input-group">
+    <input type="text" id="url" placeholder="Paste link here...">
+  </div>
+  
+  <button onclick="downloadVideo()">
+    <i class="fas fa-cloud-download-alt"></i> Get Video
+  </button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+async function downloadVideo() {
+  const url = document.getElementById("url").value;
+  const result = document.getElementById("result");
+
+  if (!url) {
+    alert("Please enter a valid TikTok URL");
+    return;
+  }
+
+  result.innerHTML = '<div class="loader"></div><p>Fetching Premium Quality...</p>';
+
+  try {
+    const response = await fetch(`https://tikwm.com/api/?url=${encodeURIComponent(url)}`);
+    const data = await response.json();
+
+    if (data && data.data && data.data.play) {
+      const videoUrl = data.data.play;
+      const title = data.data.title || "tiktok_video";
+
+      result.innerHTML = `
+        <div class="video-card">
+          <video controls id="mainVideo" src="${videoUrl}"></video>
+          <a class="download-btn" href="javascript:void(0)" onclick="forceDownload('${videoUrl}', '${title}.mp4')">
+            <i class="fas fa-download"></i> Save to Device
+          </a>
+        </div>
+      `;
+    } else {
+      result.innerHTML = "<p style='color:red;'>❌ Failed to fetch video. Try another link.</p>";
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      margin: 0;
-      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-      transition: background 0.3s ease;
-    }
+  } catch (error) {
+    result.innerHTML = "<p style='color:red;'>⚠️ Connection Error!</p>";
+  }
+}
 
-    /* LIGHT THEME (white & pink) */
-    :root {
-      --bg-start: #fff5f8;
-      --bg-end: #ffe0ec;
-      --card-bg: rgba(255, 255, 255, 0.96);
-      --text-primary: #1e1a2f;
-      --text-secondary: #4a4458;
-      --accent-pink: #ff2c6c;
-      --accent-pink-light: #ff5a8e;
-      --accent-pink-soft: #ffb7ce;
-      --border-light: rgba(255, 44, 108, 0.2);
-      --input-bg: #ffffff;
-      --input-border: #ffbfd1;
-      --shadow-sm: 0 12px 28px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(255, 44, 108, 0.08);
-      --shadow-focus: 0 0 0 3px rgba(255, 44, 108, 0.25);
-      --btn-bg: #ff2c6c;
-      --btn-hover: #e61a58;
-      --btn-text: white;
-      --download-bg: #ff2c6c;
-      --icon-color: #ff2c6c;
-      --loader-color: #ff2c6c;
-      --card-radius: 2rem;
-    }
+// Function to force browser to download the file instead of just opening it
+async function forceDownload(videoUrl, fileName) {
+  try {
+    const response = await fetch(videoUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    alert("Download Started!");
+  } catch (e) {
+    // Fallback if blob download fails
+    window.open(videoUrl, '_blank');
+  }
+}
+</script>
 
-    /* DARK THEME (black & red) */
-    body.dark {
-      --bg-start: #050505;
-      --bg-end: #2c0808;
-      --card-bg: #0c0c0c;
-      --text-primary: #f0f0f0;
-      --text-secondary: #bfbfbf;
-      --accent-pink: #e03a3a;
-      --accent-pink-light: #ff4d4d;
-      --accent-pink-soft: #4a1818;
-      --border-light: rgba(224, 58, 58, 0.35);
-      --input-bg: #181818;
-      --input-border: #6e2c2c;
-      --shadow-sm: 0 20px 35px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(224, 58, 58, 0.2);
-      --shadow-focus: 0 0 0 3px rgba(224, 58, 58, 0.5);
-      --btn-bg: #d32f2f;
-      --btn-hover: #b71c1c;
-      --btn-text: #ffffff;
-      --download-bg: #d32f2f;
-      --icon-color: #e03a3a;
-      --loader-color: #e03a3a;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* Premium Card */
-    .downloader-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(2px);
-      border-radius: var(--card-radius);
-      padding: 2rem 1.8rem 2.2rem;
-      box-shadow: var(--shadow-sm);
-      text-align: center;
-      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s ease;
-      animation: floatIn 0.6s ease-out;
-    }
-
-    .downloader-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 28px 40px -14px rgba(0, 0, 0, 0.2), 0 0 0 1px var(--border-light);
-    }
-
-    /* Header with Logo + Theme Toggle */
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.2rem;
-      flex-wrap: wrap;
+</body>
+</html>
       gap: 0.75rem;
     }
 
