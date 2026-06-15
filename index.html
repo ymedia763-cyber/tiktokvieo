@@ -1,338 +1,475 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikTok Downloader</title>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>TikTok Video Downloader - Without Watermark</title> 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+<style> 
+* { margin: 0; padding: 0; box-sizing: border-box; } 
+:root { --primary: #6366f1; --primary-light: #818cf8; --primary-dark: #4f46e5; --accent: #f43f5e; --accent-light: #fb7185; --success: #10b981; --warning: #f59e0b; --tiktok-cyan: #69C9D0; --tiktok-red: #EE1D52; --tiktok-dark: #010101; --bg-dark: #0a0a1a; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.6); --border: rgba(255, 255, 255, 0.08); --glass: rgba(255, 255, 255, 0.03); } 
+body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; } 
+.bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; } 
+.bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); animation: floatOrb 20s ease-in-out infinite; opacity: 0.3; } 
+.bg-orb:nth-child(1) { width: 600px; height: 600px; background: radial-gradient(circle, #69C9D0, transparent); top: -200px; left: -100px; } 
+.bg-orb:nth-child(2) { width: 500px; height: 500px; background: radial-gradient(circle, #EE1D52, transparent); top: 50%; right: -150px; animation-delay: -7s; animation-duration: 25s; } 
+.bg-orb:nth-child(3) { width: 400px; height: 400px; background: radial-gradient(circle, #6366f1, transparent); bottom: -100px; left: 30%; animation-delay: -14s; animation-duration: 22s; } 
+.bg-orb:nth-child(4) { width: 350px; height: 350px; background: radial-gradient(circle, #8b5cf6, transparent); top: 30%; left: 50%; animation-delay: -5s; animation-duration: 18s; } 
+@keyframes floatOrb { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(100px, -50px) scale(1.1); } 50% { transform: translate(-50px, 100px) scale(0.9); } 75% { transform: translate(80px, 50px) scale(1.05); } } 
+.grid-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; z-index: 0; } 
+.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 12px 30px; background: rgba(10, 10, 26, 0.7); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; } 
+.navbar.scrolled { padding: 8px 30px; background: rgba(10, 10, 26, 0.92); } 
+.navbar-left { display: flex; align-items: center; gap: 14px; } 
+.brand-logo { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(105, 201, 208, 0.5); overflow: hidden; flex-shrink: 0; box-shadow: 0 0 20px rgba(105, 201, 208, 0.3); transition: all 0.4s ease; animation: logoPulse 3s ease-in-out infinite; cursor: pointer; } 
+.brand-logo:hover { border-color: var(--tiktok-cyan); box-shadow: 0 0 30px rgba(105, 201, 208, 0.5); transform: scale(1.08); } 
+@keyframes logoPulse { 0%, 100% { box-shadow: 0 0 15px rgba(105, 201, 208, 0.2); } 50% { box-shadow: 0 0 25px rgba(105, 201, 208, 0.4); } } 
+.brand-logo img { width: 100%; height: 100%; object-fit: cover; } 
+.brand-name { font-size: 17px; font-weight: 800; background: linear-gradient(135deg, #69C9D0, #EE1D52); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
+.brand-tagline { font-size: 11px; color: var(--text-secondary); } 
+.navbar-right { display: flex; align-items: center; gap: 10px; } 
+.social-icons-nav { display: flex; align-items: center; gap: 6px; margin-right: 15px; padding-right: 15px; border-right: 1px solid var(--border); } 
+.social-icon-btn { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s ease; position: relative; text-decoration: none; } 
+.social-icon-btn:hover { transform: translateY(-3px) scale(1.05); border-color: transparent; } 
+.social-icon-btn.youtube:hover { background: rgba(255,0,0,0.15); border-color: rgba(255,0,0,0.4); box-shadow: 0 8px 25px rgba(255,0,0,0.2); } 
+.social-icon-btn.youtube svg { fill: #ff4444; transition: all 0.3s; } 
+.social-icon-btn.youtube:hover svg { fill: #ff0000; filter: drop-shadow(0 0 8px rgba(255,0,0,0.5)); } 
+.social-icon-btn.tiktok:hover { background: rgba(105,201,208,0.15); border-color: rgba(105,201,208,0.4); box-shadow: 0 8px 25px rgba(105,201,208,0.2); } 
+.social-icon-btn.tiktok svg { transition: all 0.3s; } 
+.social-icon-btn.tiktok:hover svg { filter: drop-shadow(0 0 8px rgba(105,201,208,0.6)); } 
+.social-icon-btn.whatsapp:hover { background: rgba(37,211,102,0.15); border-color: rgba(37,211,102,0.4); box-shadow: 0 8px 25px rgba(37,211,102,0.2); } 
+.social-icon-btn.whatsapp svg { fill: #25d366; transition: all 0.3s; } 
+.social-icon-btn.whatsapp:hover svg { filter: drop-shadow(0 0 8px rgba(37,211,102,0.5)); } 
+.social-icon-btn .tooltip { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%) scale(0.8); background: rgba(0,0,0,0.9); color: white; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.3s ease; } 
+.social-icon-btn .tooltip::before { content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: rgba(0,0,0,0.9); } 
+.social-icon-btn:hover .tooltip { opacity: 1; transform: translateX(-50%) scale(1); bottom: -40px; } 
+.nav-btn { padding: 9px 18px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.3s ease; } 
+.nav-btn:hover { background: rgba(105,201,208,0.1); border-color: rgba(105,201,208,0.3); color: var(--text-primary); } 
+.nav-btn.active { background: linear-gradient(135deg, #69C9D0, #EE1D52); border-color: transparent; color: white; } 
+.container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 20px; padding-top: 90px; } 
+.header { text-align: center; padding: 50px 0 40px; } 
+.header-social-icons { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 28px; animation: fadeInDown 0.8s ease; } 
+.header-social-btn { width: 52px; height: 52px; border-radius: 16px; border: 1px solid var(--border); background: var(--glass); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; text-decoration: none; } 
+.header-social-btn:hover { transform: translateY(-5px) scale(1.1); } 
+.header-social-btn.youtube:hover { background: rgba(255,0,0,0.12); border-color: rgba(255,0,0,0.4); box-shadow: 0 12px 35px rgba(255,0,0,0.25); } 
+.header-social-btn.youtube svg { width: 28px; height: 28px; } 
+.header-social-btn.tiktok:hover { background: rgba(105,201,208,0.12); border-color: rgba(105,201,208,0.4); box-shadow: 0 12px 35px rgba(105,201,208,0.25); } 
+.header-social-btn.tiktok svg { width: 26px; height: 26px; } 
+.header-social-btn.whatsapp:hover { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.4); box-shadow: 0 12px 35px rgba(37,211,102,0.25); } 
+.header-social-btn.whatsapp svg { width: 28px; height: 28px; } 
+.header-social-btn .h-tooltip { position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%) scale(0.8); background: rgba(0,0,0,0.9); color: white; padding: 5px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.3s ease; } 
+.header-social-btn:hover .h-tooltip { opacity: 1; transform: translateX(-50%) scale(1); bottom: -38px; } 
+.header-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; background: rgba(105, 201, 208, 0.15); border: 1px solid rgba(105, 201, 208, 0.3); border-radius: 50px; font-size: 13px; font-weight: 500; color: var(--tiktok-cyan); margin-bottom: 24px; backdrop-filter: blur(20px); animation: fadeInDown 0.8s ease 0.1s both; } 
+.header h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; animation: fadeInUp 0.8s ease; } 
+.gradient-text { background: linear-gradient(135deg, #69C9D0, #EE1D52, #69C9D0); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; } 
+@keyframes shimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } } 
+.header p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; animation: fadeInUp 0.8s ease 0.2s both; } 
+.tiktok-hero-icon { margin-bottom: 20px; animation: fadeInDown 0.6s ease; } 
+.tiktok-hero-icon svg { width: 70px; height: 70px; filter: drop-shadow(0 0 30px rgba(105,201,208,0.3)); } 
+.search-section { margin: 30px auto 50px; max-width: 750px; animation: fadeInUp 0.8s ease 0.4s both; } 
+.search-wrapper { display: flex; gap: 12px; } 
+.search-input-container { flex: 1; position: relative; } 
+.search-input-container > svg { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); z-index: 2; width: 22px; height: 22px; } 
+.search-input { width: 100%; padding: 18px 20px 18px 55px; background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 16px; color: var(--text-primary); font-size: 16px; font-family: 'Inter', sans-serif; outline: none; transition: all 0.4s ease; } 
+.search-input:focus { border-color: var(--tiktok-cyan); background: rgba(105,201,208,0.05); box-shadow: 0 0 0 4px rgba(105,201,208,0.1), 0 20px 60px rgba(0,0,0,0.3); } 
+.search-input::placeholder { color: rgba(255,255,255,0.3); } 
+.download-btn-main { padding: 18px 36px; background: linear-gradient(135deg, #69C9D0, #EE1D52); border: none; border-radius: 16px; color: white; font-size: 16px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.4s ease; white-space: nowrap; position: relative; overflow: hidden; } 
+.download-btn-main::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; } 
+.download-btn-main:hover::before { left: 100%; } 
+.download-btn-main:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(105,201,208,0.3); } 
+.features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; } 
+.feature-card { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; transition: all 0.4s ease; } 
+.feature-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.3); } 
+.feature-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 14px; } 
+.feature-card:nth-child(1) .feature-icon { background: rgba(105,201,208,0.15); color: #69C9D0; } 
+.feature-card:nth-child(2) .feature-icon { background: rgba(238,29,82,0.15); color: #EE1D52; } 
+.feature-card:nth-child(3) .feature-icon { background: rgba(16,185,129,0.15); color: #34d399; } 
+.feature-card:nth-child(4) .feature-icon { background: rgba(245,158,11,0.15); color: #fbbf24; } 
+.feature-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; } 
+.feature-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; } 
+.how-section { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 24px; padding: 35px; margin-bottom: 30px; } 
+.section-title { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; } 
+.section-title-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(105,201,208,0.15); color: #69C9D0; } 
+.section-title h2 { font-size: 22px; font-weight: 700; } 
+.section-title p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; } 
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; } 
+.step-card { text-align: center; padding: 30px 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; transition: all 0.3s ease; } 
+.step-card:hover { transform: translateY(-5px); border-color: rgba(105,201,208,0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.2); } 
+.step-number { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; margin: 0 auto 16px; } 
+.step-card:nth-child(1) .step-number { background: rgba(105,201,208,0.15); color: #69C9D0; } 
+.step-card:nth-child(2) .step-number { background: rgba(238,29,82,0.15); color: #EE1D52; } 
+.step-card:nth-child(3) .step-number { background: rgba(16,185,129,0.15); color: #34d399; } 
+.step-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; } 
+.step-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; } 
+.loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,26,0.85); backdrop-filter: blur(20px); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; gap: 24px; } 
+.loading-overlay.active { display: flex; animation: fadeIn 0.3s ease; } 
+.loader { width: 60px; height: 60px; border: 3px solid rgba(105,201,208,0.1); border-top: 3px solid #69C9D0; border-right: 3px solid #EE1D52; border-radius: 50%; animation: spin 1s linear infinite; } 
+.loading-text { font-size: 16px; color: var(--text-secondary); animation: pulse 1.5s ease infinite; } 
+.loading-sub { font-size: 13px; color: rgba(255,255,255,0.4); } 
+@keyframes spin { to { transform: rotate(360deg); } } 
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } } 
+.error-message { display: none; text-align: center; padding: 60px 20px; animation: fadeIn 0.5s ease; } 
+.error-message.active { display: block; } 
+.error-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(238,29,82,0.1); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #EE1D52; margin: 0 auto 20px; } 
+.error-message h3 { font-size: 20px; margin-bottom: 8px; } 
+.error-message p { color: var(--text-secondary); font-size: 15px; max-width: 500px; margin: 0 auto; line-height: 1.6; } 
+.error-message .retry-btn { margin-top: 20px; padding: 12px 30px; border-radius: 14px; border: 1px solid rgba(105,201,208,0.3); background: rgba(105,201,208,0.1); color: #69C9D0; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; } 
+.error-message .retry-btn:hover { background: rgba(105,201,208,0.2); transform: translateY(-2px); } 
+.results-section { display: none; animation: fadeInUp 0.8s ease; } 
+.results-section.active { display: block; } 
+.video-preview-card { background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; margin-bottom: 25px; transition: all 0.4s ease; } 
+.video-preview-card:hover { border-color: rgba(105,201,208,0.3); box-shadow: 0 30px 80px rgba(0,0,0,0.3); } 
+.video-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; background: #000; } 
+.video-container video { width: 100%; display: block; border-radius: 0; } 
+.video-watermark-badge { position: absolute; top: 16px; right: 16px; padding: 6px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.9); color: white; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 6px; z-index: 5; box-shadow: 0 4px 15px rgba(16,185,129,0.4); } 
+.video-details-bar { padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; } 
+.video-author-info { display: flex; align-items: center; gap: 14px; } 
+.author-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #69C9D0, #EE1D52); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid rgba(255,255,255,0.2); } 
+.author-details h4 { font-size: 15px; font-weight: 700; } 
+.author-details span { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; } 
+.video-stats { display: flex; gap: 16px; } 
+.video-stat-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); } 
+.video-stat-item i { font-size: 14px; } 
+.video-stat-item.likes i { color: #EE1D52; } 
+.video-stat-item.comments i { color: #69C9D0; } 
+.video-stat-item.shares i { color: #fbbf24; } 
+.video-stat-item.plays i { color: #818cf8; } 
+.video-desc-card { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 25px; } 
+.video-desc-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; } 
+.video-desc-card h4 i { color: var(--tiktok-cyan); } 
+.video-desc-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; word-break: break-word; } 
+.video-desc-text .hashtag-inline { color: #69C9D0; font-weight: 600; cursor: pointer; } 
+.music-info { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); } 
+.music-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(238,29,82,0.15); display: flex; align-items: center; justify-content: center; color: #EE1D52; font-size: 14px; animation: spinSlow 3s linear infinite; } 
+@keyframes spinSlow { to { transform: rotate(360deg); } } 
+.music-details { font-size: 13px; color: var(--text-secondary); } 
+.music-details strong { color: var(--text-primary); font-weight: 600; } 
+.download-section { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 24px; padding: 35px; margin-bottom: 25px; } 
+.download-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; } 
+.download-option-card { padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; transition: all 0.4s ease; cursor: pointer; position: relative; overflow: hidden; } 
+.download-option-card:hover { transform: translateY(-4px); border-color: rgba(105,201,208,0.3); box-shadow: 0 15px 40px rgba(0,0,0,0.2); } 
+.download-option-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; } 
+.download-option-card:nth-child(1)::before { background: linear-gradient(90deg, #69C9D0, #34d399); } 
+.download-option-card:nth-child(2)::before { background: linear-gradient(90deg, #EE1D52, #fb7185); } 
+.download-option-card:nth-child(3)::before { background: linear-gradient(90deg, #6366f1, #818cf8); } 
+.download-option-card:nth-child(4)::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); } 
+.download-option-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; } 
+.download-option-label { display: flex; align-items: center; gap: 10px; } 
+.dl-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; } 
+.download-option-card:nth-child(1) .dl-icon { background: rgba(105,201,208,0.15); color: #69C9D0; } 
+.download-option-card:nth-child(2) .dl-icon { background: rgba(238,29,82,0.15); color: #EE1D52; } 
+.download-option-card:nth-child(3) .dl-icon { background: rgba(99,102,241,0.15); color: #818cf8; } 
+.download-option-card:nth-child(4) .dl-icon { background: rgba(245,158,11,0.15); color: #fbbf24; } 
+.dl-label h4 { font-size: 14px; font-weight: 700; } 
+.dl-label span { font-size: 11px; color: var(--text-secondary); } 
+.quality-badge { padding: 4px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; } 
+.quality-badge.hd { background: rgba(105,201,208,0.15); color: #69C9D0; } 
+.quality-badge.nomark { background: rgba(16,185,129,0.15); color: #34d399; } 
+.quality-badge.audio { background: rgba(139,92,246,0.15); color: #a78bfa; } 
+.quality-badge.gif { background: rgba(245,158,11,0.15); color: #fbbf24; } 
+.download-action-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; position: relative; overflow: hidden; } 
+.download-action-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); transition: left 0.4s; } 
+.download-action-btn:hover::before { left: 100%; } 
+.download-option-card:nth-child(1) .download-action-btn { background: linear-gradient(135deg, #69C9D0, #4db8bd); color: white; } 
+.download-option-card:nth-child(2) .download-action-btn { background: linear-gradient(135deg, #EE1D52, #d01848); color: white; } 
+.download-option-card:nth-child(3) .download-action-btn { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; } 
+.download-option-card:nth-child(4) .download-action-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; } 
+.download-action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); } 
+.toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 24px; background: rgba(16,185,129,0.95); backdrop-filter: blur(20px); border-radius: 14px; color: white; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; z-index: 3000; transform: translateY(100px); opacity: 0; transition: all 0.4s ease; box-shadow: 0 15px 40px rgba(16,185,129,0.3); } 
+.toast.show { transform: translateY(0); opacity: 1; } 
+.toast.error { background: rgba(238,29,82,0.95); box-shadow: 0 15px 40px rgba(238,29,82,0.3); } 
+.api-info-card { background: rgba(105,201,208,0.05); border: 1px solid rgba(105,201,208,0.15); border-radius: 18px; padding: 24px; margin-bottom: 30px; display: flex; align-items: flex-start; gap: 14px; } 
+.api-info-card i { font-size: 20px; color: #69C9D0; margin-top: 2px; } 
+.api-info-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; } 
+.api-info-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; } 
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } 
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } } 
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } } 
+.footer { text-align: center; padding: 40px 0; margin-top: 30px; border-top: 1px solid var(--border); } 
+.footer-socials { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 16px; } 
+.footer-social-btn { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; } 
+.footer-social-btn:hover { transform: translateY(-3px); } 
+.footer-social-btn.youtube:hover { background: rgba(255,0,0,0.12); border-color: rgba(255,0,0,0.3); } 
+.footer-social-btn.tiktok:hover { background: rgba(105,201,208,0.12); border-color: rgba(105,201,208,0.3); } 
+.footer-social-btn.whatsapp:hover { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.3); } 
+.footer-social-btn svg { width: 20px; height: 20px; } 
+.footer p { color: var(--text-secondary); font-size: 13px; } 
+@media (max-width: 768px) { .features-grid { grid-template-columns: repeat(2, 1fr); } .steps-grid { grid-template-columns: 1fr; } .download-options { grid-template-columns: 1fr; } .navbar-right .nav-btn { display: none; } .video-details-bar { flex-direction: column; align-items: flex-start; } .video-stats { flex-wrap: wrap; } } 
+@media (max-width: 600px) { .container { padding: 15px; padding-top: 80px; } .search-wrapper { flex-direction: column; } .download-btn-main { justify-content: center; } .features-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .navbar { padding: 10px 16px; } .brand-name { font-size: 15px; } .brand-logo { width: 36px; height: 36px; } .social-icons-nav { gap: 4px; margin-right: 8px; padding-right: 8px; } .social-icon-btn { width: 34px; height: 34px; } .header-social-btn { width: 46px; height: 46px; } } 
+::-webkit-scrollbar { width: 8px; } 
+::-webkit-scrollbar-track { background: transparent; } 
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; } 
+</style> 
+</head> 
+<body> 
+<div class="bg-animation"> <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div> </div> 
+<div class="grid-pattern"></div> 
+<nav class="navbar" id="navbar"> 
+<div class="navbar-left"> 
+<div class="brand-logo"><img src="https://i.ibb.co/PzwKtHfd/file-00000000b33871faab77a118b28ed2a5.png" alt="Logo"></div> 
+<div> <div class="brand-name">TikTok Downloader</div> <div class="brand-tagline">Without Watermark • HD Quality</div> </div> 
+</div> 
+<div class="navbar-right"> 
+<div class="social-icons-nav"> 
+<a href="https://youtube.com/@yasiriqbal_01?si=hHT_JWZA67A2hXdd" target="_blank" class="social-icon-btn youtube"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> <span class="tooltip">YouTube</span> </a> 
+<a href="https://vm.tiktok.com/ZS9jDw9rwTTyg-nx7lY/" target="_blank" class="social-icon-btn tiktok"> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> <span class="tooltip">TikTok</span> </a> 
+<a href="https://whatsapp.com/channel/0029VbCEdrq0bIdoR2SJiW1S" target="_blank" class="social-icon-btn whatsapp"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> <span class="tooltip">WhatsApp</span> </a> 
+</div> 
+<button class="nav-btn active"><i class="fas fa-download"></i> Downloader</button> 
+<button class="nav-btn" onclick="document.getElementById('videoUrl').focus()"><i class="fas fa-search"></i> Search</button> 
+</div> 
+</nav> 
+<div class="loading-overlay" id="loadingOverlay"> <div class="loader"></div> <div class="loading-text">Fetching TikTok video...</div> <div class="loading-sub">Removing watermark & preparing HD download</div> </div> 
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">Done!</span></div> 
+<div class="container"> 
+<header class="header"> 
+<div class="header-social-icons"> 
+<a href="https://youtube.com/@yasiriqbal_01?si=hHT_JWZA67A2hXdd" target="_blank" class="header-social-btn youtube"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> <span class="h-tooltip">YouTube</span> </a> 
+<a href="https://vm.tiktok.com/ZS9jDw9rwTTyg-nx7lY/" target="_blank" class="header-social-btn tiktok"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> <span class="h-tooltip">TikTok</span> </a> 
+<a href="https://whatsapp.com/channel/0029VbCEdrq0bIdoR2SJiW1S" target="_blank" class="header-social-btn whatsapp"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> <span class="h-tooltip">WhatsApp</span> </a> 
+</div> 
+<div class="tiktok-hero-icon"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> </div> 
+<div class="header-badge"><i class="fas fa-bolt"></i> Free TikTok Video Downloader</div> 
+<h1>TikTok Video<br><span class="gradient-text">Downloader</span></h1> 
+<p>Download TikTok videos without watermark in HD quality. Just paste the link and download instantly — 100% free, no registration.</p> 
+</header> 
+<div class="search-section"> 
+<div class="search-wrapper"> 
+<div class="search-input-container"> 
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> 
+<input type="text" class="search-input" id="videoUrl" placeholder="Paste TikTok video URL here..." autocomplete="off"> 
+</div> 
+<button class="download-btn-main" onclick="fetchVideo()"><i class="fas fa-download"></i> Download</button> 
+</div> 
+</div> 
+<div class="features-grid"> 
+<div class="feature-card"> <div class="feature-icon"><i class="fas fa-ban"></i></div> <h4>No Watermark</h4> <p>Download clean videos without TikTok watermark</p> </div> 
+<div class="feature-card"> <div class="feature-icon"><i class="fas fa-hd"></i></div> <h4>HD Quality</h4> <p>Full HD resolution up to 1080p quality</p> </div> 
+<div class="feature-card"> <div class="feature-icon"><i class="fas fa-infinity"></i></div> <h4>Unlimited</h4> <p>No daily limits, download as many as you want</p> </div> 
+<div class="feature-card"> <div class="feature-icon"><i class="fas fa-rocket"></i></div> <h4>Super Fast</h4> <p>Lightning fast download speed guaranteed</p> </div> 
+</div> 
+<div class="how-section"> 
+<div class="section-title"> <div class="section-title-icon"><i class="fas fa-question-circle"></i></div> <div><h2>How It Works</h2><p>Download TikTok videos in 3 simple steps</p></div> </div> 
+<div class="steps-grid"> 
+<div class="step-card"> <div class="step-number">1</div> <h4>Copy TikTok Link</h4> <p>Open TikTok app, tap Share on the video, then tap "Copy Link"</p> </div> 
+<div class="step-card"> <div class="step-number">2</div> <h4>Paste & Fetch</h4> <p>Paste the copied link in the box above and click "Download"</p> </div> 
+<div class="step-card"> <div class="step-number">3</div> <h4>Save Video</h4> <p>Preview the video and click download to save it to your device</p> </div> 
+</div> 
+</div> 
+<div class="error-message" id="errorMessage"> 
+<div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div> 
+<h3>Oops! Something went wrong</h3> 
+<p id="errorText">Please enter a valid TikTok video URL.</p> 
+<button class="retry-btn" onclick="hideError(); document.getElementById('videoUrl').focus();"> <i class="fas fa-redo"></i> Try Again </button> 
+</div> 
+<div class="results-section" id="resultsSection"> 
+<div class="video-preview-card"> 
+<div class="video-container"> 
+<video id="videoPlayer" controls playsinline></video> 
+<div class="video-watermark-badge"> <i class="fas fa-check-circle"></i> No Watermark </div> 
+</div> 
+<div class="video-details-bar"> 
+<div class="video-author-info"> <div class="author-avatar" id="authorAvatar">T</div> <div class="author-details"> <h4 id="authorName">@username</h4> <span><i class="fas fa-music"></i> <span id="musicTitle">Original Sound</span></span> </div> </div> 
+<div class="video-stats"> <div class="video-stat-item plays"><i class="fas fa-play"></i><span id="playCount">0</span></div> <div class="video-stat-item likes"><i class="fas fa-heart"></i><span id="likeCount">0</span></div> <div class="video-stat-item comments"><i class="fas fa-comment"></i><span id="commentCount">0</span></div> <div class="video-stat-item shares"><i class="fas fa-share"></i><span id="shareCount">0</span></div> </div> 
+</div> 
+</div> 
+<div class="video-desc-card"> 
+<h4><i class="fas fa-align-left"></i> Description</h4> 
+<div class="video-desc-text" id="videoDescription">Video description will appear here...</div> 
+<div class="music-info"> <div class="music-icon"><i class="fas fa-music"></i></div> <div class="music-details"><strong id="musicName">Music Title</strong><br><span id="musicAuthor">Artist</span></div> </div> 
+</div> 
+<div class="download-section"> 
+<div class="section-title"> <div class="section-title-icon"><i class="fas fa-download"></i></div> <div><h2>Download Options</h2><p>Choose your preferred format and quality</p></div> </div> 
+<div class="download-options"> 
+<div class="download-option-card" onclick="downloadVideo('no_watermark')"> <div class="download-option-top"> <div class="download-option-label"> <div class="dl-icon"><i class="fas fa-video"></i></div> <div class="dl-label"><h4>HD Video</h4><span>Without Watermark</span></div> </div> <span class="quality-badge hd">HD</span> </div> <button class="download-action-btn"><i class="fas fa-download"></i> Download HD (No Watermark)</button> </div> 
+<div class="download-option-card" onclick="downloadVideo('watermark')"> <div class="download-option-top"> <div class="download-option-label"> <div class="dl-icon"><i class="fas fa-film"></i></div> <div class="dl-label"><h4>Original Video</h4><span>With Watermark</span></div> </div> <span class="quality-badge nomark">Original</span> </div> <button class="download-action-btn"><i class="fas fa-download"></i> Download Original</button> </div> 
+<div class="download-option-card" onclick="downloadVideo('audio')"> <div class="download-option-top"> <div class="download-option-label"> <div class="dl-icon"><i class="fas fa-headphones"></i></div> <div class="dl-label"><h4>Audio Only</h4><span>MP3 Format</span></div> </div> <span class="quality-badge audio">MP3</span> </div> <button class="download-action-btn"><i class="fas fa-music"></i> Download Audio</button> </div> 
+<div class="download-option-card" onclick="downloadVideo('cover')"> <div class="download-option-top"> <div class="download-option-label"> <div class="dl-icon"><i class="fas fa-image"></i></div> <div class="dl-label"><h4>Cover Image</h4><span>Thumbnail JPG</span></div> </div> <span class="quality-badge gif">JPG</span> </div> <button class="download-action-btn"><i class="fas fa-image"></i> Download Cover</button> </div> 
+</div> 
+</div> 
+</div> 
+<div class="footer"> 
+<div class="footer-socials"> 
+<a href="https://youtube.com/@yasiriqbal_01?si=hHT_JWZA67A2hXdd" target="_blank" class="footer-social-btn youtube"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> </a> 
+<a href="https://vm.tiktok.com/ZS9jDw9rwTTyg-nx7lY/" target="_blank" class="footer-social-btn tiktok"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> </a> 
+<a href="https://whatsapp.com/channel/0029VbCEdrq0bIdoR2SJiW1S" target="_blank" class="footer-social-btn whatsapp"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> </a> 
+</div> 
+<p>Built with <i class="fas fa-heart" style="color:#EE1D52"></i> by <strong>Yasir Iqbal</strong> — TikTok Video Downloader</p> 
+</div> 
+</div> 
+<script> 
+let videoData = null; 
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+window.addEventListener('scroll', () => { 
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50); 
+}); 
 
-<style>
-:root {
-  --bg-color: #080808;
-  --accent-color: #fe2c55;
-  --container-bg: rgba(255, 255, 255, 0.08);
-  --text-color: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.1);
-  --yt-red: #ff0000;
-  --wa-green: #25D366;
-  --tt-black: #010101;
-}
+document.getElementById('videoUrl').addEventListener('keypress', e => { 
+    if (e.key === 'Enter') fetchVideo(); 
+}); 
 
-/* کاپی روکنے کے لیے CSS */
-body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  color: var(--text-color);
-  overflow-x: hidden;
-}
+function isTikTokUrl(url) { 
+    return /tiktok\.com/i.test(url) || /vm\.tiktok/i.test(url); 
+} 
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+function normalizeUrl(url) { 
+    if (!url) return null; 
+    if (url.startsWith('http://') || url.startsWith('https://')) return url; 
+    if (url.startsWith('//')) return 'https:' + url; 
+    return 'https://www.tikwm.com' + (url.startsWith('/') ? url : '/' + url); 
+} 
 
-.container {
-  background: var(--container-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 40px 30px;
-  border-radius: 30px;
-  width: 100%;
-  max-width: 450px;
-  text-align: center;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.2);
-  animation: slideUpMain 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
+async function fetchVideo() { 
+    const url = document.getElementById('videoUrl').value.trim(); 
+    if (!url) return showError('Please paste a TikTok video URL.'); 
+    if (!isTikTokUrl(url)) return showError('Invalid URL. Please paste a valid TikTok video link.'); 
 
-@keyframes slideUpMain {
-  from { opacity: 0; transform: translateY(50px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    showLoading(true); 
+    hideError(); 
+    document.getElementById('resultsSection').classList.remove('active'); 
 
-.social-header {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  animation: fadeIn 1.5s ease;
-}
+    try { 
+        const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`; 
+        const response = await fetch(apiUrl); 
+        const data = await response.json(); 
 
-.social-btn {
-  padding: 10px 18px;
-  border-radius: 50px;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
+        if (data.code !== 0 || !data.data) { 
+            showLoading(false); 
+            return showError('Could not fetch this video. The video might be private, removed, or the link is incorrect. Please try another link.'); 
+        } 
 
-.btn-yt { background: var(--yt-red); }
-.btn-tt { background: var(--tt-black); }
-.btn-wa { background: var(--wa-green); }
+        videoData = data.data; 
+        displayVideo(videoData); 
+        showLoading(false); 
+        document.getElementById('resultsSection').classList.add('active'); 
+        setTimeout(() => document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' }), 300); 
+    } catch (e) { 
+        showLoading(false); 
+        showError('Network error. Please check your internet connection and try again.'); 
+        console.error(e); 
+    } 
+} 
 
-.social-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  filter: brightness(1.2);
-}
+function displayVideo(data) { 
+    const videoPlayer = document.getElementById('videoPlayer'); 
+    const videoSrc = normalizeUrl(data.play); 
+    if (videoSrc) { 
+        videoPlayer.src = videoSrc; 
+        videoPlayer.load(); 
+    } 
 
-/* یوٹیوب ڈاؤنلوڈر بٹن کا اسٹائل */
-.yt-downloader-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 0, 0, 0.2);
-  color: #fff;
-  text-decoration: none;
-  padding: 8px 15px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 25px;
-  border: 1px solid rgba(255,0,0,0.3);
-  transition: 0.3s;
-  backdrop-filter: blur(5px);
-}
+    const posterUrl = normalizeUrl(data.cover) || normalizeUrl(data.origin_cover); 
+    if (posterUrl) videoPlayer.poster = posterUrl; 
 
-.yt-downloader-link:hover {
-  background: var(--yt-red);
-  border-color: #fff;
-  transform: scale(1.05);
-}
+    const author = data.author || {}; 
+    document.getElementById('authorName').textContent = '@' + (author.unique_id || author.nickname || 'unknown'); 
+    const avatarChar = (author.nickname || 'T').charAt(0).toUpperCase(); 
+    document.getElementById('authorAvatar').textContent = avatarChar; 
 
-.logo-icon { 
-  font-size: 60px; 
-  color: #fff; 
-  margin-bottom: 15px;
-  animation: pulse 2s infinite; 
-}
+    document.getElementById('playCount').textContent = formatNumber(data.play_count || 0); 
+    document.getElementById('likeCount').textContent = formatNumber(data.digg_count || 0); 
+    document.getElementById('commentCount').textContent = formatNumber(data.comment_count || 0); 
+    document.getElementById('shareCount').textContent = formatNumber(data.share_count || 0); 
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
+    let desc = data.title || 'No description'; 
+    desc = desc.replace(/(#\w+)/g, '<span class="hashtag-inline">$1</span>'); 
+    document.getElementById('videoDescription').innerHTML = desc; 
 
-.input-wrapper {
-  background: var(--card-bg);
-  border-radius: 15px;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: 0.3s;
-}
+    const musicInfo = data.music_info || {}; 
+    const musicTitle = musicInfo.title || 'Original Sound'; 
+    document.getElementById('musicTitle').textContent = musicTitle; 
+    document.getElementById('musicName').textContent = musicTitle; 
+    document.getElementById('musicAuthor').textContent = musicInfo.author || author.nickname || 'Unknown Artist'; 
+} 
 
-.input-wrapper:focus-within {
-  background: rgba(255,255,255,0.15);
-  border-color: #fff;
-  box-shadow: 0 0 15px rgba(255,255,255,0.2);
-}
+// ========== FIXED DOWNLOAD FUNCTION ========== 
+async function downloadViaBlob(url, filename) { 
+    try { 
+        // Show downloading toast 
+        showToast('Downloading... please wait'); 
+        const response = await fetch(url); 
+        if (!response.ok) throw new Error('Network response was not ok'); 
+        const blob = await response.blob(); 
+        const blobUrl = window.URL.createObjectURL(blob); 
+        const a = document.createElement('a'); 
+        a.href = blobUrl; 
+        a.download = filename; 
+        document.body.appendChild(a); 
+        a.click(); 
+        document.body.removeChild(a); 
+        window.URL.revokeObjectURL(blobUrl); 
+        showToast('Download started! Check your downloads folder.'); 
+        return true; 
+    } catch (err) { 
+        console.error('Download failed:', err); 
+        showToast('Download failed. Try again.', true); 
+        return false; 
+    } 
+} 
 
-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 12px;
-  color: white;
-  outline: none;
-  font-size: 14px;
-}
+function downloadVideo(type) { 
+    if (!videoData) return showToast('No video loaded!', true); 
 
-input::placeholder { color: rgba(255,255,255,0.6); }
+    let downloadUrl = ''; 
+    let filename = 'tiktok_video'; 
 
-.control-btn { 
-  background: rgba(255,255,255,0.1); 
-  border: none; 
-  color: #fff; 
-  padding: 8px 12px; 
-  cursor: pointer; 
-  font-weight: 600; 
-  border-radius: 10px;
-  margin-left: 5px;
-  transition: 0.3s;
-}
-.control-btn:hover { background: #fff; color: #000; }
+    switch(type) { 
+        case 'no_watermark': 
+            downloadUrl = normalizeUrl(videoData.play); 
+            filename = 'tiktok_no_watermark.mp4'; 
+            break; 
+        case 'watermark': 
+            downloadUrl = normalizeUrl(videoData.wmplay); 
+            filename = 'tiktok_original.mp4'; 
+            break; 
+        case 'audio': 
+            downloadUrl = normalizeUrl(videoData.music); 
+            filename = 'tiktok_audio.mp3'; 
+            break; 
+        case 'cover': 
+            downloadUrl = normalizeUrl(videoData.cover) || normalizeUrl(videoData.origin_cover); 
+            filename = 'tiktok_cover.jpg'; 
+            break; 
+        default: 
+            return showToast('Invalid download option', true); 
+    } 
 
-.main-btn {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 15px;
-  background: #fff;
-  color: #000;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  font-size: 16px;
-  transition: 0.4s;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
+    if (!downloadUrl) { 
+        return showToast('Download link not available for this format.', true); 
+    } 
 
-.main-btn:active { transform: scale(0.95); }
-.main-btn:hover { background: var(--accent-color); color: #fff; }
+    downloadViaBlob(downloadUrl, filename); 
+} 
 
-.video-info-card {
-  margin-top: 30px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  animation: slideUpMain 0.6s ease-out;
-}
+function formatNumber(n) { 
+    if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B'; 
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M'; 
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K'; 
+    return n.toString(); 
+} 
 
-video { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+function showLoading(s) { 
+    document.getElementById('loadingOverlay').classList.toggle('active', s); 
+} 
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-}
+function showError(m) { 
+    document.getElementById('errorText').textContent = m; 
+    document.getElementById('errorMessage').classList.add('active'); 
+} 
 
-.stat-item {
-  background: rgba(255,255,255,0.1);
-  padding: 12px;
-  border-radius: 15px;
-  font-size: 14px;
-}
+function hideError() { 
+    document.getElementById('errorMessage').classList.remove('active'); 
+} 
 
-.download-link {
-  display: block;
-  text-align: center;
-  background: linear-gradient(90deg, #00f2ea, #00c2ba);
-  color: #000;
-  padding: 15px;
-  border-radius: 15px;
-  text-decoration: none;
-  font-weight: 800;
-  transition: 0.3s;
-}
-
-.download-link:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,242,234,0.4); }
-
-@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-
-</style>
-</head>
-<body oncontextmenu="return false;"> <div class="container">
-  <div class="social-header">
-    <a href="https://youtube.com/@yasiriqbal_01?sub_confirmation=1" target="_blank" class="social-btn btn-yt">
-      <i class="fab fa-youtube"></i> YouTube
-    </a>
-    <a href="https://www.tiktok.com/@yasiriqbal_01" target="_blank" class="social-btn btn-tt">
-      <i class="fab fa-tiktok"></i> TikTok
-    </a>
-    <a href="https://whatsapp.com/channel/0029VbCEdrq0bIdoR2SJiW1S" target="_blank" class="social-btn btn-wa">
-      <i class="fab fa-whatsapp"></i> Join
-    </a>
-  </div>
-
-  <a href="https://ymedia763-cyber.github.io/yt_thumbnail/" target="_blank" class="yt-downloader-link">
-    <svg viewBox="0 0 576 512" width="18" fill="white"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.781 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
-    Try YouTube Thumbnail Downloader
-  </a>
-
-  <div class="logo-icon"><i class="fab fa-tiktok"></i></div>
-  <h2 style="margin:0 0 25px 0; font-weight: 700; letter-spacing: -1px;">TikTok Pro Downloader</h2>
-  
-  <div class="input-wrapper">
-    <input type="text" id="url" placeholder="Paste link here..." autocomplete="off">
-    <button class="control-btn" onclick="pasteLink()">PASTE</button>
-  </div>
-  
-  <button class="main-btn" onclick="fetchVideo()">
-    <i class="fas fa-bolt"></i> ANALYZE & DOWNLOAD
-  </button>
-
-  <div id="result"></div>
-</div>
-
-<script>
-document.onkeydown = function(e) {
-  if(e.ctrlKey && (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 73)) {
-    return false;
-  }
-};
-
-async function pasteLink() {
-  try {
-    const text = await navigator.clipboard.readText();
-    document.getElementById("url").value = text;
-  } catch (err) {
-    alert("Please allow clipboard access or paste manually.");
-  }
-}
-
-async function fetchVideo() {
-  const url = document.getElementById("url").value;
-  const result = document.getElementById("result");
-  if (!url) { alert("Please paste a link!"); return; }
-
-  result.innerHTML = '<p style="margin-top:20px; animation: fadeIn 0.5s infinite alternate;">🚀 Fetching Magic...</p>';
-
-  try {
-    const response = await fetch(`https://tikwm.com/api/?url=${encodeURIComponent(url)}`);
-    const json = await response.json();
-    const data = json.data;
-
-    if (data) {
-      result.innerHTML = `
-        <div class="video-info-card">
-          <video controls src="${data.play}"></video>
-          <div class="stats-grid">
-            <div class="stat-item"><i class="fas fa-heart" style="color:#fe2c55"></i><br>${data.digg_count}</div>
-            <div class="stat-item"><i class="fas fa-comment" style="color:#00f2ea"></i><br>${data.comment_count}</div>
-            <div class="stat-item"><i class="fas fa-share" style="color:#25D366"></i><br>${data.share_count}</div>
-          </div>
-          <a class="download-link" href="javascript:void(0)" onclick="forceDownload('${data.play}', 'tiktok_video.mp4')">
-            <i class="fas fa-cloud-download-alt"></i> SAVE TO GALLERY
-          </a>
-        </div>
-      `;
-    } else {
-      result.innerHTML = "<p style='color:#ff4d4d; margin-top:20px;'>❌ Video not found.</p>";
-    }
-  } catch (e) {
-    result.innerHTML = "<p style='color:#ff4d4d; margin-top:20px;'>⚠️ Connection failed.</p>";
-  }
-}
-
-async function forceDownload(videoUrl, fileName) {
-  const response = await fetch(videoUrl);
-  const blob = await response.blob();
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-}
-</script>
-</body>
+function showToast(m, e = false) { 
+    const t = document.getElementById('toast'); 
+    document.getElementById('toastMessage').textContent = m; 
+    t.className = 'toast' + (e ? ' error' : ''); 
+    const icon = t.querySelector('i'); 
+    if (icon) icon.className = e ? 'fas fa-times-circle' : 'fas fa-check-circle'; 
+    setTimeout(() => t.classList.add('show'), 10); 
+    setTimeout(() => t.classList.remove('show'), 3000); 
+} 
+</script> 
+</body> 
 </html>
